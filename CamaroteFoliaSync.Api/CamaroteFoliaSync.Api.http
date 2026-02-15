@@ -1,0 +1,6 @@
+@CamaroteFoliaSync.Api_HostAddress = http://localhost:5135
+
+GET {{CamaroteFoliaSync.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
