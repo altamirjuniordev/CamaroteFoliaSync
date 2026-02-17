@@ -9,6 +9,11 @@
             Id = id;
         }
 
+        private Entity()
+        {
+            Id = default!;
+        }
+
         public override bool Equals(object? obj)
         {
             if (obj is not Entity<TId> other)

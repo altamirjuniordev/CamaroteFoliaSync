@@ -10,5 +10,9 @@ namespace CamaroteFoliaSync.Domain.Entities
         {
             DataRegistro = DateTime.UtcNow;
         }
+
+        private Foliao() : base(default!)
+        {
+        }
     }
 }
