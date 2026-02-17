@@ -37,7 +37,7 @@ namespace CamaroteFoliaSync.Domain.Entities
 
             _folioesPresentes.Add(pulseiraId);
 
-            var registro = new RegistroFluxo(pulseiraId, TipoFluxo.Entrada);
+            var registro = new RegistroFluxo(Id, pulseiraId, TipoFluxo.Entrada);
             _domainEvents.Add(new FoliaoEntrouEvent(pulseiraId, Id, LotacaoAtual));
 
             return registro;
@@ -50,7 +50,7 @@ namespace CamaroteFoliaSync.Domain.Entities
 
             _folioesPresentes.Remove(pulseiraId);
 
-            var registro = new RegistroFluxo(pulseiraId, TipoFluxo.Saida);
+            var registro = new RegistroFluxo(Id, pulseiraId, TipoFluxo.Saida);
             _domainEvents.Add(new FoliaoSaiuEvent(pulseiraId, Id, LotacaoAtual));
 
             return registro;

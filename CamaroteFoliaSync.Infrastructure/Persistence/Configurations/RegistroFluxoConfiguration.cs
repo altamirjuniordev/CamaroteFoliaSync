@@ -16,10 +16,14 @@ public class RegistroFluxoConfiguration : IEntityTypeConfiguration<RegistroFluxo
         builder.Property(r => r.PulseiraId).HasConversion(pulseiraId => pulseiraId.Valor,
             valor => new PulseiraId(valor)).HasMaxLength(50).IsRequired();
 
+        builder.Property(r => r.PulseiraId).HasConversion(pulseiraId => pulseiraId.Valor,
+            valor => new PulseiraId(valor)).HasMaxLength(50).IsRequired();
+
         builder.Property(r => r.Tipo).IsRequired();
 
         builder.Property(r => r.DataHora).IsRequired();
 
+        builder.HasIndex(r => r.CamaroteId);
         builder.HasIndex(r => r.PulseiraId);
         builder.HasIndex(r => r.DataHora);
     }

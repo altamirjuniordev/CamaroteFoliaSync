@@ -9,7 +9,7 @@
             Id = id;
         }
 
-        private Entity()
+        protected Entity()
         {
             Id = default!;
         }
