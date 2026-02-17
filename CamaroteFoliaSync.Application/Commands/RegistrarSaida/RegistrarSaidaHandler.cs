@@ -3,6 +3,8 @@ using CamaroteFoliaSync.Domain.ValueObjects;
 using CamaroteFoliaSync.Application.DTOs;
 using CamaroteFoliaSync.Application.Interfaces;
 using MediatR;
+using CamaroteFoliaSync.Domain.Entities;
+using CamaroteFoliaSync.Domain.Enums;
 
 
 namespace CamaroteFoliaSync.Application.Commands.RegistrarSaida;
@@ -23,25 +25,22 @@ public class RegistrarSaidaHandler : IRequestHandler<RegistrarSaidaCommand, Flux
         var camarote = await _camaroteRepository.ObterComFolioesAsync(request.CamaroteId)
             ?? throw new InvalidOperationException("Camarote não encontrado");
 
-        var pulseiraId = new PulseiraId(request.PulseiraId);
-        var registro = camarote.RegistrarSaida(pulseiraId);
+        var estaPresente = await _camaroteRepository.FoliaoEstaPresenteAsync(request.CamaroteId, request.PulseiraId);
+        if (!estaPresente)
+            throw new InvalidOperationException("Folião não está no camarote.");
 
-        await _camaroteRepository.AtualizarAsync(camarote);
+        var pulseiraId = new PulseiraId(request.PulseiraId);
+        var registro = new RegistroFluxo(request.CamaroteId, pulseiraId, TipoFluxo.Saida);
         await _camaroteRepository.AdicionarRegistroFluxoAsync(registro);
 
-        foreach(var evento in camarote.DomainEvents)
-        {
-            await _eventPublisher.PublicarAsync(evento);
-        }
-
-        camarote.LimparEventos();
+        var lotacaoAtual = await _camaroteRepository.CalcularLotacaoAsync(request.CamaroteId);
 
         return new FluxoResponseDto(
             registro.Id,
             request.PulseiraId,
             "Saida",
-                camarote.LotacaoAtual,
-                camarote.CapacidadeMaxima,
-                registro.DataHora);
+            lotacaoAtual,
+            camarote.CapacidadeMaxima,
+            registro.DataHora);
     }
 }

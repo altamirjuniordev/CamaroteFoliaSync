@@ -18,14 +18,16 @@ public class ObterLotacaoHandler : IRequestHandler<ObterLotacaoQuery, LotacaoDto
         var camarote = await _camaroteRepository.ObterComFolioesAsync(request.CamaroteId)
             ?? throw new InvalidOperationException("Camarote não encontrado.");
 
+        var lotacaoAtual = await _camaroteRepository.CalcularLotacaoAsync(request.CamaroteId);
+
         var percentual = camarote.CapacidadeMaxima > 0
-            ? Math.Round((decimal)camarote.LotacaoAtual / camarote.CapacidadeMaxima * 100, 2)
+            ? Math.Round((decimal)lotacaoAtual / camarote.CapacidadeMaxima * 100, 2)
             : 0;
 
         return new LotacaoDto(
             camarote.Id,
             camarote.Nome,
-            camarote.LotacaoAtual,
+            lotacaoAtual,
             camarote.CapacidadeMaxima,
             percentual);
     }
