@@ -15,7 +15,7 @@ public class ObterLotacaoHandler : IRequestHandler<ObterLotacaoQuery, LotacaoDto
 
     public async Task<LotacaoDto> Handle(ObterLotacaoQuery request, CancellationToken cancellationToken)
     {
-        var camarote = await _camaroteRepository.ObterComFolioesAsync(request.CamaroteId)
+        var camarote = await _camaroteRepository.ObterPorIdAsync(request.CamaroteId)
             ?? throw new InvalidOperationException("Camarote não encontrado.");
 
         var lotacaoAtual = await _camaroteRepository.CalcularLotacaoAsync(request.CamaroteId);

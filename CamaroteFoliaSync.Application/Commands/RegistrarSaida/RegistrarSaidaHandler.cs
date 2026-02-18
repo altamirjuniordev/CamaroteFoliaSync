@@ -1,11 +1,11 @@
-﻿using CamaroteFoliaSync.Domain.Interfaces;
-using CamaroteFoliaSync.Domain.ValueObjects;
-using CamaroteFoliaSync.Application.DTOs;
+﻿using CamaroteFoliaSync.Application.DTOs;
 using CamaroteFoliaSync.Application.Interfaces;
-using MediatR;
 using CamaroteFoliaSync.Domain.Entities;
 using CamaroteFoliaSync.Domain.Enums;
-
+using CamaroteFoliaSync.Domain.Events;
+using CamaroteFoliaSync.Domain.Interfaces;
+using CamaroteFoliaSync.Domain.ValueObjects;
+using MediatR;
 
 namespace CamaroteFoliaSync.Application.Commands.RegistrarSaida;
 
@@ -14,7 +14,7 @@ public class RegistrarSaidaHandler : IRequestHandler<RegistrarSaidaCommand, Flux
     private readonly ICamaroteRepository _camaroteRepository;
     private readonly IEventPublisher _eventPublisher;
 
-    public RegistrarSaidaHandler( ICamaroteRepository camaroteRepository, IEventPublisher eventPublisher)
+    public RegistrarSaidaHandler(ICamaroteRepository camaroteRepository, IEventPublisher eventPublisher)
     {
         _camaroteRepository = camaroteRepository;
         _eventPublisher = eventPublisher;
@@ -22,8 +22,8 @@ public class RegistrarSaidaHandler : IRequestHandler<RegistrarSaidaCommand, Flux
 
     public async Task<FluxoResponseDto> Handle( RegistrarSaidaCommand request, CancellationToken cancellationToken)
     {
-        var camarote = await _camaroteRepository.ObterComFolioesAsync(request.CamaroteId)
-            ?? throw new InvalidOperationException("Camarote não encontrado");
+        var camarote = await _camaroteRepository.ObterPorIdAsync(request.CamaroteId)
+            ?? throw new InvalidOperationException("Camarote não encontrado.");
 
         var estaPresente = await _camaroteRepository.FoliaoEstaPresenteAsync(request.CamaroteId, request.PulseiraId);
         if (!estaPresente)
@@ -34,6 +34,8 @@ public class RegistrarSaidaHandler : IRequestHandler<RegistrarSaidaCommand, Flux
         await _camaroteRepository.AdicionarRegistroFluxoAsync(registro);
 
         var lotacaoAtual = await _camaroteRepository.CalcularLotacaoAsync(request.CamaroteId);
+
+        await _eventPublisher.PublicarAsync(new FoliaoSaiuEvent(pulseiraId, request.CamaroteId, lotacaoAtual));
 
         return new FluxoResponseDto(
             registro.Id,

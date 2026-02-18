@@ -15,8 +15,5 @@ public class CamaroteConfiguration : IEntityTypeConfiguration<Camarote>
         builder.Property(c => c.Nome).IsRequired().HasMaxLength(100);
 
         builder.Property(c => c.CapacidadeMaxima).IsRequired();
-
-        builder.Ignore(c => c.LotacaoAtual);
-        builder.Ignore(c => c.DomainEvents);
     }
 }

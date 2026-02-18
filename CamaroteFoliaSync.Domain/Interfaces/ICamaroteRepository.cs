@@ -5,7 +5,6 @@ namespace CamaroteFoliaSync.Domain.Interfaces
     public interface ICamaroteRepository
     {
         Task<Camarote?> ObterPorIdAsync(Guid id);
-        Task<Camarote?> ObterComFolioesAsync(Guid id); 
         Task AdicionarAsync(Camarote camarote);
         Task AdicionarRegistroFluxoAsync(RegistroFluxo registro);
         Task<int> CalcularLotacaoAsync(Guid camaroteId);
